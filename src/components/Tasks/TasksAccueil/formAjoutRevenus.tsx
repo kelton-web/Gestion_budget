@@ -4,13 +4,13 @@
  import { Button, TextInput, View, StyleSheet, Text, Keyboard, ScrollView } from 'react-native';
  import { Formik } from 'formik';
  import * as yup from 'yup';
-import InputAll from '../_Shared/InputAll';
+import InputAll from '../../_Shared/InputAll';
 import moment from 'moment';
-import SelectDropdownPicker from '../_Shared/Dropdown';
-import DateYears from '../_Shared/DatePicker';
+import SelectDropdownPicker from '../../_Shared/Dropdown';
+import DateYears from '../../_Shared/DatePicker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteNavigation } from '../../interfaces/index';
+import { RouteNavigation } from '../../../interfaces/index';
 
 
 interface FormType {
@@ -88,6 +88,7 @@ const InputAjoutRevenus: React.FC<FormType> = ({navigation, countries}) => (
            onBlur={handleBlur('montant')}
            value={values.montant}
            style={styles.inputStyle}
+           keyboardType="numeric"
            label='Montant'
            placeholder="Quelle est votre montant"
          />

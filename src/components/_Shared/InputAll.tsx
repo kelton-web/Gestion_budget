@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TextInput } from 'react-native'
-import React from 'react'
+import React, { ReactNode } from 'react'
 
 interface StockTypes {
     onChangeText: (value: string) => void;
@@ -8,6 +8,7 @@ interface StockTypes {
     style: any;
     label?: string;
     placeholder?: string;
+    keyboardType?: any;
 }
 
 const InputAll: React.FC<StockTypes> = ({label,...props}) => {

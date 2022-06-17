@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import InputAjoutRevenus from '../components/Tasks/formAjoutRevenus';
+import InputAjoutRevenus from '../components/Tasks/TasksAccueil/formAjoutRevenus';
 import { RouteNavigation } from '../interfaces/index';
+import { countriesRevenus } from '../interfaces/types/dataCategorie';
 
 
 const Ajout_revenus: React.FC<RouteNavigation> = (props : any) => {
-  const countriesRevenus = ['Salaire et assimilé', 'Revenu financier', 'Rente', 'Pension alimentaire', 'Allocation chômage', 'Prestations sociales', 'Revenu foncier', 'Revenu exceptionnel', 'Autre revenu'];
   return (
     <View>
       <InputAjoutRevenus navigation={props.navigation} countries={countriesRevenus}/>
