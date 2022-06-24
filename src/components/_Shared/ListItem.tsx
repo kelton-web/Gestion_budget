@@ -1,5 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteNavigation, Iincomes } from '../../interfaces/index';
+
 
 interface StockPropsType {
     item?: string,
@@ -8,20 +12,28 @@ interface StockPropsType {
     comments?: string,
     date: string,
     amount?: string,
+    onPress?: () => void
+    type?: any
+    typeCompte?: any
+
 }
 
-const ListItem: React.FC<StockPropsType>= ({item, id, category, comments, date, amount}) => {
+const ListItem: React.FC<StockPropsType>= ({item, id, category, comments, date, amount, onPress, type, typeCompte}) => {
+    const navigation = useNavigation<NativeStackNavigationProp<RouteNavigation>>()
     const newDate = date.substr(0, 10)
   return (
-    <TouchableOpacity>
-        <View style={styles.container}>
+    <TouchableOpacity onPress={onPress}  >
+        <View style={[
+            styles.container,
+            id == type ? styles.inlineStyle : styles.alertsStyle
+        ]}>
             <View style={styles.styleCategory}>
                 <Text>{category}</Text>
             </View>
             <View style={styles.styleDate}>
                 <Text>{newDate}</Text>
             </View>
-            <View style={styles.styleAmount}>
+            <View>
                 <Text>{amount}</Text>
             </View>
         </View>
@@ -53,5 +65,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'flex-start',
         width: '40%',
+        
+    },
+    inlineStyle: {
+        backgroundColor: 'rgba(255, 99, 72,.1)'
+    },
+    alertsStyle: {
+        backgroundColor: 'rgba(46, 213, 115,.1)'
     }
 })
