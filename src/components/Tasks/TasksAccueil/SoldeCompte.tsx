@@ -2,12 +2,13 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { resultatTotal } from '../../../utils/TranformAmount'
 
+
 const SoldeCompte = () => {
   return (
     <View style={styles.container}>
         <View style={styles.smallContainerTitle}>
             <Text style={styles.titleStyle}>Solde de votre compte</Text>
-            <Text style={styles.soldeStyle}><Text>€</Text> {resultatTotal}</Text>
+            <Text style={styles.soldeStyle}><Text>€</Text> {resultatTotal()}</Text>
         </View>
     </View>
   )

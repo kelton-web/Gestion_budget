@@ -1,12 +1,16 @@
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteNavigation } from '../interfaces';
 import SoldeCompte from '../components/Tasks/TasksAccueil/SoldeCompte';
-import ListDebit from '../components/Tasks/TasksAccueil/ListDebit';
+import ListDebit from '../components/Tasks/TasksAccueil/ListAccueil';
 import ButtonChoiceHome from '../components/_Shared/ButtonChoiceHome';
 import BtnRevenusDepense from '../components/_Shared/BtnRevenusDepense';
+import Data from '../assets/data/data.json';
+import {returnResultIcome} from '../utils/TranformAmount';
+import {returnResultExpense} from '../utils/TranformAmount';
+
 
 interface AccueilType {
 
@@ -14,6 +18,8 @@ interface AccueilType {
 
 const Accueil: React.FC<AccueilType> = ({}) => {
     const navigation = useNavigation<NativeStackNavigationProp<RouteNavigation>>();
+    const [choice, SetChoice] = useState<string>("")
+
 
     const HandleIcomes = () => {
       navigation.navigate('Ajout_revenus')
@@ -22,6 +28,32 @@ const Accueil: React.FC<AccueilType> = ({}) => {
     const HandleExpenses = () => {
       navigation.navigate('Ajout_depenses')
     }
+
+
+    const ChangeStateChoiceRevenus = () => {
+      SetChoice("revenus")
+      //console.log(choice)
+    }
+    const ChangeStateChoiceDepenses = () => {
+      SetChoice("depenses")
+     // console.log(choice)
+    }
+    const ChangeStateChoice = () => {
+      SetChoice(" ")
+     // console.log(choice)
+    }
+
+    const HandleUser = Data.map(data => data.user)
+    const [userData, setUserData] = useState("Ross Hess")
+    const userSelect = Data.filter((item) => item.user === userData)
+
+    const onSelectedUser = (values:string) => {
+      setUserData(values)
+      console.log(values)
+    }
+
+    returnResultIcome(userSelect[0].incomes);
+    returnResultExpense(userSelect[0].expenses);
   return (
     <View style={styles.containerAccueil}>
       <View style={styles.containerSolde}>
@@ -31,33 +63,24 @@ const Accueil: React.FC<AccueilType> = ({}) => {
         <View style={styles.containerBtn}>
           <View style={{width: '50%', height: '100%', backgroundColor: 'rgba(46, 213, 115,.2)'
 }}>
-            <BtnRevenusDepense HandleNavigation={HandleIcomes} stylebtn={styles.btnRevenus} style={styles.textBtnRevenusStyle}/>  
+            <BtnRevenusDepense HandleNavigation={HandleIcomes} title="Ajouter" stylebtn={styles.btnRevenus} style={styles.textBtnRevenusStyle}/>  
           </View>
           <View style={{width: '50%', height: '100%', backgroundColor: 'rgba(255, 71, 87, .2)'}}>
-            <BtnRevenusDepense HandleNavigation={HandleExpenses} style={styles.textBtnDepenseStyle} stylebtn={styles.btnDepenses}/>
+            <BtnRevenusDepense HandleNavigation={HandleExpenses} title="Retirer" style={styles.textBtnDepenseStyle} stylebtn={styles.btnDepenses}/>
           </View>
 
         </View>
       </View>
-      
       <View style={styles.containerAllDebit}>
-        <View style={styles.choiceFilter}>
-          <ButtonChoiceHome title="Revenus"/>
-          <View style={styles.separatorChoice}/>
-          <ButtonChoiceHome title="Depenses"/>
-          <View style={styles.separatorChoice}/>
-          <ButtonChoiceHome title="Compte"/>
-        </View>
           <View style={styles.smallcategory}>
             <Text style={{left: -5, fontSize: 12, color: 'gray'}}>Categorie</Text>
             <View style={styles.separatorChoiceOne}/>
             <Text style={{fontSize: 12, color: 'gray'}}>Date</Text>
             <View style={styles.separatorChoiceOne}/>
-
             <Text style={{left: 5, fontSize: 12, color: 'gray'}}>Montant</Text>
           </View>
         <View>
-          <ListDebit />
+          <ListDebit choice={choice} data={userSelect}/> 
         </View>
       </View>
     </View>

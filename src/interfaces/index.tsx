@@ -37,4 +37,8 @@ export type Iincomes = {
     comments: string
     _id_income: string
 }
+export type AllData = {
+    incomes: Iincomes[]
+    expenses: Iexpenses[]
+}
 

@@ -7,9 +7,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Accueil from '../screens/Accueil';
 import Compte from '../screens/Compte';
 import { RouteNavigation } from '../interfaces';
-import Ajout_revenus from '../screens/Ajout_revenus';
+import Ajout_revenus from '../screens/screensStacks/Ajout_revenus';
 import Statistiques from '../screens/Statistiques';
-import Ajout_depenses from '../screens/Ajout_depenses';
+import Ajout_depenses from '../screens/screensStacks/Ajout_depenses';
 
 const Stack = createNativeStackNavigator<RouteNavigation>();
 const Tab = createBottomTabNavigator<RouteNavigation>();
