@@ -1,6 +1,6 @@
 
 
- import React, { useState } from 'react';
+ import React, { useState, useEffect } from 'react';
  import { Button, TextInput, View, StyleSheet, Text, Keyboard, ScrollView } from 'react-native';
  import { Formik } from 'formik';
  import * as yup from 'yup';
@@ -11,19 +11,31 @@ import DateYears from '../../_Shared/DatePicker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteNavigation } from '../../../interfaces/index';
+import Realm from "realm";
+import {UUID, ObjectId} from 'bson'
+import 'react-native-get-random-values'
+import { v4 as uuid } from 'uuid'
+import { IObjet, IncomesType, ExpensesType } from '../TasksCompte/RealmDataBase'
 
 
 interface FormType {
   navigation: any;
   countries: string[];
+  title: string;
+}
+interface ValueNavigation {
+      name: string,
+      amount: number,
+      category: string,
+      comments: string,
+      date: Date,
 }
 
 const champsInputs = yup.object().shape({
   name: yup.string().required("Entrez votre prénom"),
-  lastname: yup.string().required("Entrez votre nom"),
-  categorie: yup.string().required("Choississez une categorie"),
-  montant: yup.number().required("Entrez un montant valid").positive().integer(),
-  commentaires: yup.string().required("Entrez un commentaire"),
+  category: yup.string().required("Choississez une categorie"),
+  amount: yup.number().required("Entrez un montant valid").positive().integer(),
+  comments: yup.string().required("Entrez un commentaire"),
   date:yup.date()
   .nullable()
   .transform((curr, orig) => orig === '' ? null : curr)
@@ -33,21 +45,179 @@ const champsInputs = yup.object().shape({
 /* const champsSubmit = () => {
   navigation.navigate('Compte')
 }; */
+/* const User = {
+  name: "User",
+  primaryKey: "_id",
+  properties: {
+    _id: "int",
+    Incomes: "Incomes",
+    Expenses: "Expenses"
+  }
+} 
+const Expenses = {
+  name: "Expenses",
+  properties: {
+      _id_expense: "int",
+      category: "string",
+      amount: "string",
+      comments: "string",
+      date: "date"
+  }
+}
+const Incomes = {
+  name: "Incomes",
+  properties: {
+      _id_income: "int",
+      category: "string",
+      amount: "string",
+      comments: "string",
+      date: "date"
+  }
+} */
 
-const InputAjoutRevenus: React.FC<FormType> = ({navigation, countries}) => (
+
+const Expenses = {
+  name: "Expenses",
+  primaryKey: "_id_expense",
+  properties: {
+      _id_expense: "string",
+      category: "string",
+      amount: "int",
+      comments: "string",
+      date: "date"
+  }
+}
+const Incomes = {
+  name: "Incomes",
+  primaryKey: "_id_income",
+  properties: {
+      _id_income: "string",
+      category: "string",
+      amount: "int",
+      comments: "string",
+      date: "date"
+  }
+}
+
+
+
+
+const InputAjoutRevenus: React.FC<FormType> = ({navigation, countries, title}) => {
+
+const IDexpense = new ObjectId();
+const IDincome = new ObjectId();
+  const [myUser, setMyUser] = useState<IObjet[] >([]);
+  const { UUID } = Realm.BSON;
+
+
+  const HandleSubmited = (values: any) => {
+              navigation.navigate('Compte', {
+              name: values.name,
+              amount: values.amount,
+              category: values.category,
+              comments: values.comments,
+              date: values.date,
+              
+            }) 
+            
+            const nombreAmount = parseInt(values.amount);
+            console.log(nombreAmount);
+      if(title === "Expenses"){     
+          Realm.open({
+              schema: [Expenses],
+              deleteRealmIfMigrationNeeded: true,
+          }).then(realm => {
+              realm.write(() => {
+                  realm.create('Expenses', {
+                      _id_expense: IDexpense.toString(),
+                      category: values.category,
+                      amount: nombreAmount,
+                      comments: values.comments,
+                      date: values.date
+                  })
+              })
+              console.log("Add user successfully");
+              console.log('User', realm.objects('Expenses'));
+              setMyUser([...realm.objects<IObjet>('Expenses')])
+              realm.close()
+          }).catch(err => {
+              console.log('error: ', err);
+          })
+      
+      
+    } else {
+      Realm.open({
+        schema: [Incomes],
+        deleteRealmIfMigrationNeeded: true,
+    }).then(realm => {
+        realm.write(() => {
+            realm.create('Incomes', {
+                _id_income: IDincome.toString(),
+                category: values.category,
+                amount: nombreAmount,
+                comments: values.comments,
+                date: values.date
+            })
+        })
+        console.log("Add user successfully");
+        console.log('User', realm.objects('Incomes'));
+        setMyUser([...realm.objects<IObjet>('Incomes')])
+        realm.close()
+    }).catch(err => {
+        console.log('error: ', err);
+    })
+  } 
+}
+  /*useEffect(() => {
+    Realm.open({
+        schema: [Incomes, Expenses]
+    }).then(realm => {
+        //setMyUser([...realm.objects<IObjet>('User')])
+        /// console.log('User', realm.objects('User'));
+        //console.log('UserIncomes', realm.objects('Incomes')); 
+        console.log('UserIncomes', realm.objects('Incomes'));
+        console.log('UserExpenses', realm.objects('Expenses'));
+        
+    })
+    return () => {
+        Realm.open({
+          schema: [Incomes, Expenses]
+      }).then(realm => {
+          //setMyUser([...realm.objects<IObjet>('User')])
+          // console.log('User', realm.objects('User'));
+          console.log('User', realm.objects('Incomes')); 
+          console.log('User', realm.objects('Incomes'));
+          console.log('User', realm.objects('Expenses'));
+          
+      })
+    }
+  },[myUser])*/
+  
+  const DeleteAllUser = () => {
+    Realm.open({
+        schema: [Expenses, Incomes]
+    }).then(realm => {
+        realm.write(() => {
+            realm.delete(
+                realm.objects("Expenses")//.filtered("name = 'Aline'")
+              );
+        })
+        console.log("Delete user successfully");
+        realm.close()
+    }).catch(err => {
+        console.log('error: ', err);
+    })
+  };
+  
+
+  return (
   
   <View style={styles.containerFormStyle}>
    <Formik 
-     initialValues={{ name: '', lastname: '', montant: '', categorie: '', commentaires: '', date: '',}}
+     initialValues={{ name: '', amount: '', category: '', comments: '', date: '',}}
      validateOnMount={true}
-     onSubmit={(values) => navigation.navigate('Compte', {
-      name: values.name,
-      lastname: values.lastname,
-      montant: values.montant,
-      category: values.categorie,
-      commentaire: values.commentaires,
-      date: values.date,
-    })}
+     onSubmit={(values) => HandleSubmited(values)}
+    
      validationSchema={champsInputs}
    >
      {({ handleChange, handleBlur, handleSubmit, values, touched, errors, isValid }) => (
@@ -63,7 +233,7 @@ const InputAjoutRevenus: React.FC<FormType> = ({navigation, countries}) => (
          {(errors.name && touched.name) &&
              <Text style={styles.errorStyle}>{errors.name}</Text>
           }
-         <InputAll
+         {/* <InputAll
            onChangeText={handleChange('lastname')}
            onBlur={handleBlur('lastname')}
            value={values.lastname}
@@ -73,38 +243,38 @@ const InputAjoutRevenus: React.FC<FormType> = ({navigation, countries}) => (
          />
          {(errors.lastname && touched.lastname) &&
              <Text style={styles.errorStyle}>{errors.lastname}</Text>
-          }
+          } */}
          
          <SelectDropdownPicker 
-            value={values.categorie} 
+            value={values.category} 
             label='Catégorie'
-            onSelect={handleChange('categorie')} 
+            onSelect={handleChange('category')} 
             countriesArray={countries}/>
-          {(errors.categorie && touched.categorie) &&
-            <Text style={styles.errorStyle}>{errors.categorie}</Text>
+          {(errors.category && touched.category) &&
+            <Text style={styles.errorStyle}>{errors.category}</Text>
          }
          <InputAll
-           onChangeText={handleChange('montant')}
-           onBlur={handleBlur('montant')}
-           value={values.montant}
+           onChangeText={handleChange('amount')}
+           onBlur={handleBlur('amount')}
+           value={values.amount}
            style={styles.inputStyle}
            keyboardType="numeric"
            label='Montant'
-           placeholder="Quelle est votre montant"
+           placeholder="Quelle est votre amount"
          />
-          {(errors.montant && touched.montant) &&
-             <Text style={styles.errorStyle}>{errors.montant}</Text>
+          {(errors.amount && touched.amount) &&
+             <Text style={styles.errorStyle}>{errors.amount}</Text>
           }
          <InputAll
-           onChangeText={handleChange('commentaires')}
-           onBlur={handleBlur('commentaires')}
-           value={values.commentaires}
+           onChangeText={handleChange('comments')}
+           onBlur={handleBlur('comments')}
+           value={values.comments}
            style={styles.inputStyle}
-           label='Commentaires'
-           placeholder="Laisser un commentaires"
+           label='commentaire'
+           placeholder="Laisser un comments"
          />
-          {(errors.commentaires && touched.commentaires) &&
-             <Text style={styles.errorStyle}>{errors.commentaires}</Text>
+          {(errors.comments && touched.comments) &&
+             <Text style={styles.errorStyle}>{errors.comments}</Text>
           }
     
          <DateYears date={values.date} onChange={handleChange('date')} label='Date' onBlur={handleBlur('date')} />
@@ -117,7 +287,7 @@ const InputAjoutRevenus: React.FC<FormType> = ({navigation, countries}) => (
      )}
    </Formik>
   </View>
- );
+)};
 
 
 export default InputAjoutRevenus;

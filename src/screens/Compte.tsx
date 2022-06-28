@@ -25,7 +25,7 @@ const Compte: React.FC<RouteNavigation> = ({}) => {
 export default Compte */
 
 
-import React, { useState } from 'react'
+import React, { useState , useEffect} from 'react'
 import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -40,7 +40,8 @@ import ListItem from '../components/_Shared/ListItem';
 import ListDebitCompte from '../components/Tasks/TasksCompte/ListReturn';
 import {returnResultIcome} from '../utils/TranformAmount';
 import {returnResultExpense} from '../utils/TranformAmount';
-import RealmDataBase from '../components/Tasks/TasksCompte/RealmDataBase';
+import { IObjet, Incomes, Expenses } from '../components/Tasks/TasksCompte/RealmDataBase';
+
 
 interface AccueilType {
 
@@ -50,18 +51,22 @@ const Compte: React.FC<AccueilType> = ({}) => {
     const navigation = useNavigation<NativeStackNavigationProp<RouteNavigation>>();
     const route = useRoute<RouteProp<RouteNavigation>>();
     console.log(route.params?.name)
-    console.log(route.params?.lastname)
     console.log(route.params?.category)
-    console.log(route.params?.commentaire)
-    console.log(route.params?.montant)
+    console.log(route.params?.comments)
+    console.log(route.params?.amount)
     console.log(route.params?.date)
-    const myName = route.params;
+   // console.log(route.params?.myUsers)
+   //const myUsersData = route.params?.myUsers
+    //const myName = route.params;
 
-    const [choice, SetChoice] = useState<string>("");
 /*     const [newData, SetNewData] = useState(Data[0].user);
     console.log(newData); */
 
 /* *********************************** Realm DataBase *********************************** */
+const [choice, SetChoice] = useState<string>("");
+
+
+const [MyInfoUser, setMyInfoUser] = useState<Iincomes[]>([]);
 
 const ChangeStateChoiceRevenus = () => {
   SetChoice("revenus")
@@ -76,25 +81,45 @@ const ChangeStateChoice = () => {
   // console.log(choice)
 }
 
+ const RealmGet = () => {
+  Realm.open({
+    schema: [Incomes, Expenses]
+}).then(realm => {
+  setMyInfoUser([...realm.objects<Iincomes>('Incomes')])
+   //console.log("Tout mes informations" + MyInfoUser.objects.keys());
+    //console.log('UserIncomes', realm.objects('Incomes'));
+  })
+}
+//console.log("MyInfoUser" + MyInfoUser)
+
+
+React.useEffect(() => {
+  const unsubscribe = navigation.addListener('focus', () => {
+    RealmGet();
+  });
+
+  return unsubscribe;
+}, [navigation]); 
+
 const HandleUser = Data.map(data => data.user)
 const [userData, setUserData] = useState("Ross Hess")
 const userSelect = Data.filter((item) => item.user === userData)
 
 const onSelectedUser = (values:string) => {
   setUserData(values)
-  var selectedRealm = userSelect;
-  setMyInfoUser([...selectedRealm])
-
-  console.log(values)
-  console.log("J'ai besoin " + selectedRealm)
+  //console.log(values)
 }
 
-  const [MyInfoUser, setMyInfoUser] = useState<any[]>([]);
-  console.log("My informations " + MyInfoUser);
+/*  let ArrayDataUser: Iincomes = [];
+    MyInfoUser.map(user => {
+    ArrayDataUser.push(user);
+    
+  })
+  console.log("Data user successfully" + ArrayDataUser);
+  console.log("userSelect" + userSelect) */
+ 
 
-  const SaveDataBaseRealm = () => {
-    console.log("My informations saved" + MyInfoUser);
-  }
+
 
     returnResultIcome(userSelect[0].incomes);
     returnResultExpense(userSelect[0].expenses);
@@ -111,9 +136,9 @@ const onSelectedUser = (values:string) => {
       )
     }
 
-    
 
 
+console.log("TOTO" + MyInfoUser)
   return (
     <View style={styles.containerAccueil}>
       <View style={styles.containerSolde}>
@@ -130,22 +155,27 @@ const onSelectedUser = (values:string) => {
           <View style={styles.separatorChoice}/>
           <ButtonChoiceHome title="Compte" onPress={ChangeStateChoice} />
         </View>
-          {/* <View style={styles.smallcategory}>
-            <Text style={{left: -5, fontSize: 12, color: 'gray'}}>Categorie</Text>
-            <View style={styles.separatorChoiceOne}/>
-            <Text style={{fontSize: 12, color: 'gray'}}>Date</Text>
-            <View style={styles.separatorChoiceOne}/>
-            <Text style={{left: 5, fontSize: 12, color: 'gray'}}>Montant</Text>
-          </View> */}
         <View>
-          <ListDebitCompte choice={choice} data={userSelect} _renderItem={_renderItem} />
-        </View>
-        <RealmDataBase />
-        <Button title="Create User" onPress={SaveDataBaseRealm  }/>
+          <ListDebitCompte choice={choice} data={userSelect}  /* MyInfoUser={ArrayDataUser} */   _renderItem={_renderItem} />
+           {
+            MyInfoUser.map((item, index) => (
+              <View key={index}>
+                   <Text>No: {index}</Text>
+                  <Text>ID: {`${item._id_income}`}</Text>
+                  <Text>amount: {item.amount}</Text> 
+                  <Text>category: {item.category}</Text> 
+                  <Text>comments: {item.comments}</Text> 
+                  <Text>date: {item.date.toString().substr(0, 10)}</Text>
+              </View>
+          ))
+        } 
+        </View>        
       </View>
     </View>
   )
 }
+
+
 
 export default Compte
 

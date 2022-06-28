@@ -8,7 +8,7 @@ import { countriesDepenses } from '../../interfaces/types/dataCategorie';
 const Ajout_depenses: React.FC<RouteNavigation> = (props : any) => {
   return (
     <View>
-      <InputAjoutRevenus navigation={props.navigation} countries={countriesDepenses}/>
+      <InputAjoutRevenus navigation={props.navigation} countries={countriesDepenses} title="Expenses"/>
     </View>
   )
 }

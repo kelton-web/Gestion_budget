@@ -10,6 +10,7 @@ import { RouteNavigation } from '../interfaces';
 import Ajout_revenus from '../screens/screensStacks/Ajout_revenus';
 import Statistiques from '../screens/Statistiques';
 import Ajout_depenses from '../screens/screensStacks/Ajout_depenses';
+import RealmDataBase from '../components/Tasks/TasksCompte/RealmDataBase';
 
 const Stack = createNativeStackNavigator<RouteNavigation>();
 const Tab = createBottomTabNavigator<RouteNavigation>();
@@ -90,6 +91,7 @@ function Navigation() {
         />
         <Stack.Screen name="Ajout_revenus" component={Ajout_revenus} />
         <Stack.Screen name="Ajout_depenses" component={Ajout_depenses} />
+        <Stack.Screen name="RealmDataBase" component={RealmDataBase} />
       </Stack.Navigator>
     </NavigationContainer>
   );

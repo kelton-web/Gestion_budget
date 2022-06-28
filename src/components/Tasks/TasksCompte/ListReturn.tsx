@@ -13,7 +13,8 @@ interface ListPropsType {
   choice?: string,
   data: any,
   _renderItem: ({item}: {item: Iincomes| Iexpenses}) => void
-  keyExtractor?: any
+  keyExtractor?: any,
+  //MyInfoUser: Iincomes[] | Iexpenses[],
 }
 
 type newTypeArray = {
@@ -24,11 +25,23 @@ type newTypeArray = {
   _id: string,
 }
 
-const ListDebitCompte: React.FC<ListPropsType> = ({choice, data, _renderItem}) => {
+const ListDebitCompte: React.FC<ListPropsType> = ({choice, data, _renderItem, }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RouteNavigation>>();
 
     const arrayIcomes = Data[0].incomes.filter(user => user);
     const arrayExpenses = Data[0].expenses.filter(user => user);
+
+
+   /*  let arrayUserInfo: Iincomes[];
+    MyInfoUser.map(item => {
+      return ( 
+                item.amount.push(arrayUserInfo),
+                item.category.push(arrayUserInfo),
+                item.comments.push(arrayUserInfo),
+                item.date.push(arrayUserInfo)
+          )
+    }) */
+   
 
     const arrayGeneral: newTypeArray[] = data[0].incomes.map((el: Iincomes) => {
         return (
@@ -54,9 +67,25 @@ const ListDebitCompte: React.FC<ListPropsType> = ({choice, data, _renderItem}) =
         }
       )
   }))
+
+
+
+
+
+
+
   const onPressNavigate = () => {
     navigation.navigate('Statistiques')
   }
+
+ /*   let arrayChoice: Iexpenses | newTypeArray[] | Iincomes;
+    if(choice === "revenus") {
+      arrayChoice = data[0].incomes;
+    }else if(choice === "depenses") {
+      arrayChoice = data[0].expenses;
+    }else {
+      arrayChoice = arrayGeneral;
+    } */
     // console.log(arrayGeneral);
 
 /*     let arrayAll = [arrayIcomes, arrayExpenses]; 
@@ -82,24 +111,23 @@ const ListDebitCompte: React.FC<ListPropsType> = ({choice, data, _renderItem}) =
   //const id = item._id_income !== undefined ? item._id_income : item._id_expense
         return (
             <View>
-                   <TouchableOpacity onPress={onPressNavigate}  >
-        <View style={[
-            styles.container,
-        ]}>
-            <View style={styles.styleCategory}>
-                <Text>{item.category}</Text>
-            </View>
-            <View style={styles.styleDate}>
-                <Text>{item.date.substr(0, 10)}</Text>
-            </View>
-            <View>
-                <Text>{item.amount}</Text>
-            </View>
-        </View>
-    </TouchableOpacity>
+              <TouchableOpacity onPress={onPressNavigate}  >
+                <View style={[ styles.container ]}>
+                  <View style={styles.styleCategory}>
+                      <Text>{item.category}</Text>
+                  </View>
+                  <View style={styles.styleDate}>
+                      <Text>{item.date.substr(0, 10)}</Text>
+                  </View>
+                  <View>
+                      <Text>{item.amount}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
             </View>
         )
     }
+    
 
 
     if (choice === "revenus") {

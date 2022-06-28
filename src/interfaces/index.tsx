@@ -1,3 +1,5 @@
+import { IObjet } from "../components/Tasks/TasksCompte/RealmDataBase";
+
 export type RouteNavigation = { /* Navigation */
     Accueil: undefined;
     Compte: undefined;
@@ -7,12 +9,14 @@ export type RouteNavigation = { /* Navigation */
     InputAjoutRevenus:{
         name: string,
         lastname: string,
-        montant: number,
+        amount: number,
         category: string,
-        commentaire: string
+        comments: string
         date: Date,
+       // myUsers: IObjet,
     };
     RootTab: undefined;
+    RealmDataBase: undefined;
 }
 
 export type ArrayData = {
